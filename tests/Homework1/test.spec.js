@@ -100,7 +100,7 @@ test('Add and delete Job Titles', async () => {
     await page.locator(orangehrmliveLocators.adminPage.jobTitlesPage.addButton).click();
 
     const jobTitle = faker.person.jobTitle();
-    const jobDescription = faker.word.words({count: {min: 3, max: 6}});
+    const jobDescription = faker.word.words({count: {min: 1, max: 4}});
 
     await page.locator(orangehrmliveLocators.adminPage.jobTitlesPage.addForm.jobTitleField).fill(jobTitle);
     await page.locator(orangehrmliveLocators.adminPage.jobTitlesPage.addForm.jobDescriptionField).fill(jobDescription);
