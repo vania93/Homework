@@ -22,7 +22,7 @@ test('Check search by user name', async () => {
     let allNames = await page.locator(orangehrmliveLocators.adminPage.users.table.nameRow).allTextContents();
 
 
-    const randomName = allNames[Math.floor(Math.random() * allNames.length - 1)];
+    const randomName = allNames[Math.floor(Math.random() * allNames.length)];
 
     await page.locator(orangehrmliveLocators.adminPage.users.filters.nameField).fill(randomName);
     await Promise.all([
