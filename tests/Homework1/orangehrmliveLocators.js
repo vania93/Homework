@@ -1,4 +1,5 @@
 let orangehrmliveLocators = {
+    toastMessage: '.oxd-toast-start p:nth-child(2)',
     loginPage: {
         nameField: '[name="username"]',
         passwordField: '[type="password"]',
@@ -36,7 +37,7 @@ let orangehrmliveLocators = {
         users: {
             table: {
                 nameRow: '.oxd-table > div:nth-child(2) > div > div > div:nth-child(2) > div',
-                userRow: '.oxd-table > div:nth-child(2) > div > div > div:nth-child(3) > div',
+                userRole: '.oxd-table > div:nth-child(2) > div > div > div:nth-child(3) > div',
                 employeeRow: '.oxd-table > div:nth-child(2) > div > div > div:nth-child(4) > div',
                 statusRow: '.oxd-table > div:nth-child(2) > div > div > div:nth-child(5) > div',
             },
@@ -57,6 +58,18 @@ let orangehrmliveLocators = {
                 passwordField: '.user-password-row > div > div:nth-child(1) input',
                 confirmPasswordField: '.user-password-row > div > div:nth-child(2) input',
                 saveButton: '.oxd-form-actions [type="submit"]',
+            },
+        },
+        skills: {
+            table: {
+                name: '[role="table"] .oxd-table-body div > [role="cell"]:nth-child(2) > div',
+                description: '[role="table"] .oxd-table-body div > [role="cell"]:nth-child(3) > div',
+                editButton: '[role="table"] .oxd-table-body div > [role="cell"]:nth-child(4) button:nth-child(2)',
+            },
+            addEditForm: {
+                nameField: '.oxd-form-row .oxd-input',
+                descriptionField: 'div textarea',
+                saveButton: '.oxd-form-actions button:nth-child(3)',
             },
         },
     },
@@ -108,6 +121,11 @@ let orangehrmliveLocators = {
             resumeField: '[type="file"]',
             submitButton: '[type="submit"]',
         },
+    },
+    buzzPage: {
+        posts: {
+            body: '.orangehrm-buzz-post-body .orangehrm-buzz-post-body-text',
+        }
     },
 }
 
