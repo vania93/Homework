@@ -143,4 +143,9 @@ exports.ProductListPage = class productListPage {
         ]);
         await this.page.waitForSelector('.products.list.items.product-items > li .price >> nth=0');
     }
+
+    async clickOnProduct(index) {
+        await this.productCard.fullCard.nth(index).click();
+        await this.page.waitForLoadState('networkidle');
+    }
 }
