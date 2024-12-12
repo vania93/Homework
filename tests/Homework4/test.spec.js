@@ -22,7 +22,7 @@ test.beforeAll(async ({browser}) => {
     apiContext = await request.newContext();
 });
 
-test.only('Verify that a new employee can be added with all mandatory fields filled', async () => {
+test('Verify that a new employee can be added with all mandatory fields filled', async () => {
     const pimPage = new PimPage(page, apiContext, token);
     const employeesList = await pimPage.getEmployeesWithApi();
     const allEmployeesIds = [];
@@ -67,7 +67,7 @@ test.only('Verify that a new employee can be added with all mandatory fields fil
     });
 });
 
-test.only('Verify just deleted user can not access the system', async ({browser}) => {
+test('Verify just deleted user can not access the system', async ({browser}) => {
     const pimPage = new PimPage(page, apiContext, token);
     const adminPage = new AdminPage(page, apiContext, token);
     let newUserData;
@@ -105,7 +105,7 @@ test.only('Verify just deleted user can not access the system', async ({browser}
     });
 });
 
-test.only('Verify that employee details can be edited and saved successfully', async () => {
+test('Verify that employee details can be edited and saved successfully', async () => {
     const pimPage = new PimPage(page, apiContext, token);
     let response;
     let employeeData;
@@ -155,7 +155,7 @@ test.only('Verify that employee details can be edited and saved successfully', a
     });
 });
 
-test.only('Verify search functionality in the employee list by name', async () => {
+test('Verify search functionality in the employee list by name', async () => {
     await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/pim/viewEmployeeList');
     const pimPage = new PimPage(page, apiContext, token);
     const employeesList = await pimPage.getEmployeesWithApi();
@@ -169,7 +169,7 @@ test.only('Verify search functionality in the employee list by name', async () =
     await expect(pimPage.employeeList.table.lastName).toHaveText(employeesList[randomIdEmployees].lastName);
 });
 
-test.only('Verify search functionality in the employee list by id', async () => {
+test('Verify search functionality in the employee list by id', async () => {
     await page.goto('https://opensource-demo.orangehrmlive.com/web/index.php/pim/viewEmployeeList');
     const pimPage = new PimPage(page, apiContext, token);
     const employeesList = await pimPage.getEmployeesWithApi();
@@ -184,7 +184,7 @@ test.only('Verify search functionality in the employee list by id', async () => 
     await expect(pimPage.employeeList.table.lastName).toHaveText(employeesList[randomIdEmployees].lastName);
 });
 
-test.only('Validate the ability to upload a profile picture for an new employee', async () => {
+test('Validate the ability to upload a profile picture for an new employee', async () => {
     const pimPage = new PimPage(page, apiContext, token);
     let response;
     let employeeData;
