@@ -2,6 +2,7 @@ import {faker} from '@faker-js/faker';
 import {expect, request} from "@playwright/test";
 import {AdminPage} from "./pages/admin.page";
 import {CommonPage} from "./pages/common.page";
+import {TimesheetsPage} from "./pages/timesheets.page";
 
 const {test} = require("@playwright/test");
 const {LoginPage} = require("./pages/login.page");
@@ -228,4 +229,159 @@ test('Validate the ability to upload a profile picture for an new employee', asy
     await test.step('Delete employee', async () => {
         await pimPage.deleteEmployeeByIdWithApi([response.data.empNumber]);
     });
+});
+
+test('Add time in My Timesheet', async ({browser}) => {
+    const pimPage = new PimPage(page, apiContext, token);
+    const adminPage = new AdminPage(page, apiContext, token);
+    const timesheetsPage = new TimesheetsPage(page, apiContext, token);
+
+    let customerId;
+    await test.step('Add Customer', async () => {
+        const customerData = {
+            name: faker.lorem.words({min: 2, max: 4}),
+            description: faker.lorem.words({min: 4, max: 7}),
+        };
+        await timesheetsPage.addCustomerWithApi(customerData);
+        customerId = await timesheetsPage.getCustomerIdByDataWithApi(customerData);
+    });
+
+    let projectId;
+    let projectData;
+    await test.step('Add project', async () => {
+        projectData = {
+            customerId: Number(customerId),
+            description: null,
+            name: faker.lorem.words({min: 2, max: 4}),
+            projectAdminsEmpNumbers: []
+        };
+        await timesheetsPage.addProjectWithApi(projectData);
+        projectId = await timesheetsPage.getProjectIdByDataWithApi(projectData);
+    });
+
+    let projectActivities;
+    await test.step('Add activities in project', async () => {
+        projectActivities = [faker.lorem.words({min: 1, max: 2}),
+            faker.lorem.words({min: 1, max: 2}),
+            faker.lorem.words({min: 1, max: 2})];
+
+        console.log(projectActivities);
+
+        for (let i = 0; i < projectActivities.length; i++) {
+            await timesheetsPage.addActivitiesInProjectWithApi(projectId, projectActivities[i]);
+        }
+    });
+
+
+    let newUserData;
+    let employeesList;
+    let userData;
+
+    await test.step('Create new user', async () => {
+        employeesList = await pimPage.getEmployeesWithApi();
+        userData = {
+            username: faker.internet.username(),
+            password: faker.internet.password({length: 20, pattern: /[a-z]/, prefix: '!Q1'}),
+            status: true,
+            userRoleId: 1,
+            empNumber: employeesList[0].empNumber,
+        }
+        newUserData = await adminPage.addUserWithApi(userData);
+    });
+
+    const newContext = await browser.newContext({viewport: {height: 900, width: 1600}});
+    const newPage = await newContext.newPage();
+    const secondWindowLoginPage = new LoginPage(newPage);
+
+    await test.step('Login to new user', async () => {
+        await secondWindowLoginPage.validLoginOrangeHr(userData.username, userData.password);
+    });
+
+
+    const secondWindowTimesheetsPage = new TimesheetsPage(newPage);
+    let timesheet;
+    await test.step('Add time in timesheet ', async () => {
+        await newPage.goto('https://opensource-demo.orangehrmlive.com/web/index.php/time/viewMyTimesheet');
+        await secondWindowTimesheetsPage.myTimesheet.editButton.click();
+
+
+        timesheet = [{
+            project: projectData.name,
+            activity: projectActivities[0],
+            mon: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+            tue: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+            wed: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+            thu: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+            fri: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+            sat: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+            sun: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+        },
+            {
+                project: projectData.name,
+                activity: projectActivities[1],
+                mon: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                tue: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                wed: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                thu: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                fri: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                sat: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                sun: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+            },
+            {
+                project: projectData.name,
+                activity: projectActivities[2],
+                mon: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                tue: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                wed: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                thu: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                fri: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                sat: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+                sun: String(faker.number.int({min: 0, max: 5}))+':'+String(faker.number.int({min: 10, max: 40})),
+            }]
+
+        await secondWindowTimesheetsPage.myTimesheet.editTimesheet.addRowButton.click();
+        await secondWindowTimesheetsPage.myTimesheet.editTimesheet.addRowButton.click();
+        await secondWindowTimesheetsPage.addTimesheet(timesheet[0], 1);
+        await secondWindowTimesheetsPage.addTimesheet(timesheet[1], 2);
+        await secondWindowTimesheetsPage.addTimesheet(timesheet[2], 3);
+
+        await secondWindowTimesheetsPage.clickSaveTimesheet();
+    });
+
+    await secondWindowTimesheetsPage.checkTimesheet(timesheet);
+
+    await test.step('Delete user', async () => {
+        await adminPage.deleteUserWithApi([newUserData.id]);
+    });
+});
+
+
+test('test', async ({page}) => {
+    await page.goto('https://magento.softwaretestingboard.com/')
+
+    await expect(page.locator('#ui-id-2 > li:nth-child(2) > a span:nth-child(2)')).toHaveText('Women');
+    await page.locator('#ui-id-2 > li:nth-child(2) > a span:nth-child(2)').hover();
+    await expect(page.locator('#ui-id-2 > li:nth-child(2) > ul > li:nth-child(1) span:nth-child(2)')).toBeVisible();
+    await expect(page.locator('#ui-id-2 > li:nth-child(2) > ul > li:nth-child(1) span:nth-child(2)')).toHaveText('Tops');
+    await expect(page.locator('#ui-id-2 > li:nth-child(2) > ul > li:nth-child(2) span:nth-child(2)')).toBeVisible();
+    await expect(page.locator('#ui-id-2 > li:nth-child(2) > ul > li:nth-child(2) span:nth-child(2)')).toHaveText('Bottoms');
+
+    await expect(page.locator('#ui-id-2 > li:nth-child(3) > a span:nth-child(2)')).toHaveText('Men');
+    await page.locator('#ui-id-2 > li:nth-child(3) > a span:nth-child(2)').hover();
+    await expect(page.locator('#ui-id-2 > li:nth-child(3) > ul > li:nth-child(1) span:nth-child(2)')).toBeVisible();
+    await expect(page.locator('#ui-id-2 > li:nth-child(3) > ul > li:nth-child(1) span:nth-child(2)')).toHaveText('Tops');
+    await expect(page.locator('#ui-id-2 > li:nth-child(3) > ul > li:nth-child(2) span:nth-child(2)')).toBeVisible();
+    await expect(page.locator('#ui-id-2 > li:nth-child(3) > ul > li:nth-child(2) span:nth-child(2)')).toHaveText('Bottoms');
+
+    await expect(page.locator('#ui-id-2 > li:nth-child(4) > a span:nth-child(2)')).toHaveText('Gear');
+    await page.locator('#ui-id-2 > li:nth-child(4) > a span:nth-child(2)').hover();
+    await expect(page.locator('#ui-id-2 > li:nth-child(4) > ul > li:nth-child(1) span')).toBeVisible();
+    await expect(page.locator('#ui-id-2 > li:nth-child(4) > ul > li:nth-child(1) span')).toHaveText('Bags');
+    await expect(page.locator('#ui-id-2 > li:nth-child(4) > ul > li:nth-child(2) span')).toBeVisible();
+    await expect(page.locator('#ui-id-2 > li:nth-child(4) > ul > li:nth-child(2) span')).toHaveText('Fitness Equipment');
+
+    await expect(page.locator('#ui-id-2 > li:nth-child(5) > a span:nth-child(2)')).toHaveText('Training');
+    await page.locator('#ui-id-2 > li:nth-child(5) > a span:nth-child(2)').hover();
+    await expect(page.locator('#ui-id-2 > li:nth-child(5) > ul > li:nth-child(1) span')).toBeVisible();
+    await expect(page.locator('#ui-id-2 > li:nth-child(5) > ul > li:nth-child(1) span')).toHaveText('Video Download');
 });
